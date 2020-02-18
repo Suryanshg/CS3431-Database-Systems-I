@@ -1,0 +1,11 @@
+DROP TABLE StayIn;
+DROP TABLE Examine;
+DROP TABLE Admission;
+DROP TABLE Doctor;
+DROP TABLE Patient;
+DROP TABLE RoomAccess;
+DROP TABLE RoomService;
+DROP TABLE Equipment;
+DROP TABLE Room;
+DROP TABLE EquipmentType;
+DROP TABLE Employee;
