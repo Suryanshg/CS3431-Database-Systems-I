@@ -163,17 +163,10 @@ END;
 CREATE OR REPLACE TRIGGER CTUtltraPurchaseYear
 BEFORE INSERT OR UPDATE ON Equipment
 FOR EACH ROW
-DECLARE
-	CTID CHAR(20);
-	UltraID CHAR(20);
+WHEN(new.TypeID='C' OR new.TypeID='U')	
 BEGIN
-	SELECT ID INTO CTID FROM EquipmentType WHERE description='CT Scanner';
-	SELECT ID INTO UltraID FROM EquipmentType WHERE description='Ultrasound';
-
-	IF(:new.TypeID=CTID OR :new.TypeID=UltraID) THEN
-		IF(:new.purchaseYear<=2006) THEN
-			RAISE_APPLICATION_ERROR(-20009,'Error: Purchase of Ultrasound and CT Scanner cannot be in and before 2006');
-		END IF;
+	IF(:new.purchaseYear<=2006) THEN
+		RAISE_APPLICATION_ERROR(-20009,'Error: Purchase of Ultrasound and CT Scanner cannot be in and before 2006');
 	END IF;
 END;
 /
@@ -263,7 +256,12 @@ INSERT INTO RoomService VALUES (4,'Emergency Room');
 INSERT INTO EquipmentType VALUES ('X','Scalpel','Sc1','ONLY for Surgeon',3);
 INSERT INTO EquipmentType VALUES ('Y','Stethoscope','St1','Hold to Chest',3);
 INSERT INTO EquipmentType VALUES ('Z','Syringe','Sy1','Just a prick',10);
+INSERT INTO EquipmentType VALUES ('C','CT Scanner','C1','Computed Tomography',1);
+INSERT INTO EquipmentType VALUES ('U','Ultrasound','U1','Ultrasound Machine',1);
 
+
+INSERT INTO Equipment VALUES ('10','C', 2020 ,'01-FEB-20',2);
+INSERT INTO Equipment VALUES ('11','U', 2007 ,'01-FEB-20',2);
 INSERT INTO Equipment VALUES ('A01-02X','X', 2020 ,'01-FEB-20',1);
 INSERT INTO Equipment VALUES ('2','Y', 1999 ,'01-FEB-20',2);
 INSERT INTO Equipment VALUES ('3','Z',2018,'01-FEB-20',1);
