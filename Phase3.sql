@@ -185,10 +185,14 @@ DECLARE
 	PatientFirstName CHAR(20);
 	PatientLastName CHAR(20);
 	PatientAddress CHAR(20);
-	cursor c1 is SELECT DoctorID FROM Examine WHERE :new.Num = Examine.AdmissionNum;
-	DoctorFirstName CHAR(20);
-	DoctorLastName CHAR(20);
-	DoctorComments CHAR(20);
+	cursor c1 is SELECT FirstName,LastName,comments
+				   FROM (SELECT DoctorID,FirstName,LastName
+				         FROM (SELECT DoctorID 
+						       FROM Examine 
+							   WHERE :new.Num = Examine.AdmissionNum) R, Doctor D
+				         WHERE D.ID = R.DoctorID) R1, Examine E
+				   WHERE R1.DoctorID=E.DoctorID AND E.AdmissionNum = :new.Num;
+	
 BEGIN
 	SELECT FirstName Into PatientFirstName From Patient Where SSN=:new.Patient_SSN; 
 	SELECT LastName Into PatientLastName From Patient Where SSN=:new.Patient_SSN;
@@ -197,13 +201,9 @@ BEGIN
 	dbms_output.put_line('Patient Last Name: '|| PatientLastName);
 	dbms_output.put_line('Patient Address: '|| PatientAddress);  
 	FOR rec in c1 Loop
-		Select FirstName INTO DoctorFirstName From Doctor WHERE ID = rec.DoctorID;
-		Select LastName INTO DoctorLastName From Doctor WHERE ID = rec.DoctorID;
-		Select comments INTO DoctorComments From Examine WHERE DoctorID = rec.DoctorID;
-		dbms_output.put_line('Doctor:' || DoctorFirstName || ' ' || DoctorLastName);
-		dbms_output.put_line('Comments: ' || DoctorComments);
+		dbms_output.put_line('Doctor:' || rec.FirstName || rec.LastName);
+		dbms_output.put_line('Comments: ' || rec.comments);
 	End Loop;
- 
 END; 
 / 
 
