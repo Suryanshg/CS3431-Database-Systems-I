@@ -86,7 +86,7 @@ DECLARE
 	cursor C1 is SELECT service FROM(Select roomNum FROM StayIn WHERE AdmissionNum = :new.AdmissionNum) R ,RoomService WHERE R.roomNum = RoomService.roomNum;
 BEGIN
 	For rec In C1 Loop
-		IF(:new.comments IS NULL AND rec = 'ICU') THEN
+		IF(:new.comments IS NULL AND rec.service = 'ICU') THEN
 			RAISE_APPLICATION_ERROR(-20004,'Error: Must have comments for patient in ICU.');
 		END IF;
 	End Loop;
@@ -100,7 +100,7 @@ CREATE OR REPLACE TRIGGER InsuranceVal
 BEFORE INSERT OR UPDATE ON Admission
 FOR EACH ROW
 BEGIN
-	:new.InsurancePayment= :new.TotalPayment * 0.65;
+	:new.InsurancePayment := :new.TotalPayment * 0.65;
 END;
 /
 
@@ -112,7 +112,7 @@ CREATE OR REPLACE TRIGGER EmployeeSuperversion
 BEFORE INSERT OR UPDATE On Employee
 FOR EACH ROW
 DECLARE 
-	supervisorRank;
+	supervisorRank INTEGER;
 BEGIN
 	IF(:new.empRANK<2) THEN
 		IF(:new.supervisorID IS NULL) THEN
@@ -150,7 +150,7 @@ DECLARE
 	cursor C1 is SELECT roomNum FROM RoomService WHERE service = 'Emergency Room';
 BEGIN
 	FOR rec in C1 Loop
-		IF(:new.RoomNum = rec) THEN
+		IF(:new.RoomNum = rec.roomNum) THEN
 			UPDATE Admission
 			SET FutureVisit=ADD_MONTHS(:new.startDate, 2)
 			WHERE Num = :new.AdmissionNum;
@@ -184,15 +184,18 @@ Hint: Use function dbms_output.put_line() also make sure to run the following li
 Sql> set serveroutput on;*/
 
 SET serveroutput ON;
-CREATE OR REPLACE TRIGGER 
-BEFORE UPDATE OF LeaveDate ON Admission
+CREATE OR REPLACE TRIGGER PatientDischarge 
+BEFORE UPDATE ON Admission
 FOR EACH ROW
 WHEN (new.LeaveDate IS NOT NULL)
 DECLARE
-	PatientFirstName Char(20);
-	PatientLastName Char(20);
-	PatientAddress Char(20);
+	PatientFirstName CHAR(20);
+	PatientLastName CHAR(20);
+	PatientAddress CHAR(20);
 	cursor c1 is SELECT DoctorID FROM Examine WHERE :new.Num = Examine.AdmissionNum;
+	DoctorFirstName CHAR(20);
+	DoctorLastName CHAR(20);
+	DoctorComments CHAR(20);
 BEGIN
 	SELECT FirstName Into PatientFirstName From Patient Where SSN=:new.Patient_SSN; 
 	SELECT LastName Into PatientLastName From Patient Where SSN=:new.Patient_SSN;
@@ -201,8 +204,11 @@ BEGIN
 	dbms_output.put_line('Patient Last Name: '|| PatientLastName);
 	dbms_output.put_line('Patient Address: '|| PatientAddress);  
 	FOR rec in c1 Loop
-		dbms_output.put_line('Doctor:' || Select FirstName From Doctor WHERE ID = rec || ' ' || Select LastName From Doctor WHERE ID = rec);
-		dbms_output.put_line('Comments: ' || Select comments From Examine WHERE DoctorID = rec);
+		Select FirstName INTO DoctorFirstName From Doctor WHERE ID = rec.DoctorID;
+		Select LastName INTO DoctorLastName From Doctor WHERE ID = rec.DoctorID;
+		Select comments INTO DoctorComments From Examine WHERE DoctorID = rec.DoctorID;
+		dbms_output.put_line('Doctor:' || DoctorFirstName || ' ' || DoctorLastName);
+		dbms_output.put_line('Comments: ' || DoctorComments);
 	End Loop;
  
 END; 
