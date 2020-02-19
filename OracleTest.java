@@ -47,8 +47,8 @@ public class OracleTest {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(
-                                                     "jdbc:oracle:thin:@csorcl.cs.wpi.edu:1521:orcl", argv[0],
-                                                     argv[1]);
+                                                     "jdbc:oracle:thin:@csorcl.cs.wpi.edu:1521:orcl", "dlmartindale",
+                                                     "DLMARTINDALE");
 
         } catch (SQLException e) {
             System.out.println("Connection Failed! Check output console");
