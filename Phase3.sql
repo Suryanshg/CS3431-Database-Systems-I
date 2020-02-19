@@ -1,5 +1,5 @@
 /* Drops all tables and Views*/
-DROP VIEW CrticalCases;
+DROP VIEW CriticalCases;
 DROP VIEW DoctorsLoad;
 DROP TABLE StayIn;
 DROP TABLE Examine;
