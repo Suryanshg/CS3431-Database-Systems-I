@@ -23,7 +23,7 @@ import java.sql.SQLException;
 
 public class OracleTest {
 
-    public static void main(String[] argv) {
+    public static void main(String[] argv) throws SQLException{
 
 
 	
@@ -47,8 +47,8 @@ public class OracleTest {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(
-                                                     "jdbc:oracle:thin:@csorcl.cs.wpi.edu:1521:orcl", "YOUR-Username",
-                                                     "YOUR-SQL-Password");
+                                                     "jdbc:oracle:thin:@csorcl.cs.wpi.edu:1521:orcl", argv[0],
+                                                     argv[1]);
 
         } catch (SQLException e) {
             System.out.println("Connection Failed! Check output console");
