@@ -1,7 +1,9 @@
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
-
+import java.util.Scanner;
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++
   Make sure you did the following before execution
@@ -20,60 +22,85 @@ import java.sql.SQLException;
         > /usr/local/bin/java OracleTest
   ++++++++++++++++++++++++++++++++++++++++++++++  */
 
-
 public class Reporting {
 
-    public static void main(String[] argv) throws SQLException {
-      if (argv.length<2 || argv.length>3 )
-      {
-        System.out.println("Incorrect Number of Arguments");
-        return;
-      }
-        try {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-
-
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(
-                                                     "jdbc:oracle:thin:@csorcl.cs.wpi.edu:1521:orcl", argv[0],
-                                                     argv[1]);
-                              
-
-        } catch (SQLException e) {
-            System.out.println("Connection Failed! Check output console");
-            e.printStackTrace();
-            return;
-        }
-
-        if (connection != null) 
-        if(argv.length=2)
-        {System.out.println("1- Report Patients Basic Information
-                            \n2- Reporting Doctors Basic Information
-                            \n3- Report Admissions Information
-                            \n 4- Update Admissions Payment");
-                            }
-        else{
-          switch (argv[2]){
-          case 1: 
-            break;
-          case 2:
-            break;
-          case 3:
-            break;
-          case 4:
-            break;
-          }
-        } 
-        else {
-            System.out.println("Failed to make connection!");
-        }
-        
-        connection.close();
+  public static void main(String[] argv) throws SQLException {
+    Scanner input = new Scanner(System.in);
+    if (argv.length < 2 || argv.length > 3) {
+      System.out.println("Incorrect Number of Arguments");
+      return;
     }
+    try {
+      Class.forName("oracle.jdbc.driver.OracleDriver");
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    Connection connection = null;
+    try {
+      connection = DriverManager.getConnection("jdbc:oracle:thin:@csorcl.cs.wpi.edu:1521:orcl", argv[0], argv[1]);
+
+    } catch (SQLException e) {
+      System.out.println("Connection Failed! Check output console");
+      e.printStackTrace();
+      return;
+    }
+
+    if (connection != null)
+      if (argv.length == 2) {
+        System.out.println(
+            "1- Report Patients Basic Information \n2- Reporting Doctors Basic Information \n3- Report Admissions Information\n4- Update Admissions Payment");
+      } else {
+        switch (argv[2]) {
+          case "1":
+            System.out.print("Enter Patient SSN:");
+            String SSN = (input.nextLine());
+            String Statement = "Select SSN,FirstName,LastName,Address From Patient Where SSN = " + "'" + SSN + "'";
+            PreparedStatement pstmt = connection.prepareStatement(Statement);
+            // pstmt.setString(1, "A");
+            ResultSet Patient = pstmt.executeQuery();
+            while (Patient.next()) {
+              System.out.println("Patient SSN: " + Patient.getString("SSN"));
+              System.out.println("Patient First Name: " + Patient.getString("FirstName"));
+              System.out.println("Patient LastName: " + Patient.getString("LastName"));
+              System.out.println("Patient Address: " + Patient.getString("Address"));
+            }
+            Patient.close();
+            pstmt.close();
+            break;
+          case "2":
+            System.out.print("Enter Doctor ID:");
+            String DoctorID = input.nextLine();
+            String DoctorStatement = ("Select ID,FirstName,LastName,gender From Doctor Where ID = " + "'" + DoctorID
+                + "'");
+            PreparedStatement pstmtDoc = connection.prepareStatement(DoctorStatement);
+            // pstmt.setString(1, "A");
+            ResultSet Doctor = pstmtDoc.executeQuery();
+            while (Doctor.next()) {
+              System.out.println("Doctor ID: " + Doctor.getString("ID"));
+              System.out.println("Doctor First Name: " + Doctor.getString("FirstName"));
+              System.out.println("Doctor LastName: " + Doctor.getString("LastName"));
+              System.out.println("Doctor Gender: " + Doctor.getString("gender"));
+            }
+            break;
+          case "3":
+            System.out.print("Enter Admission Number:");
+            String AdmissionNum = input.nextLine();
+            break;
+          case "4":
+            System.out.print("Enter Admission Number:");
+            String AdmissionNumTwo = input.nextLine();
+            System.out.print("Enter the new total payment:");
+            String totalPayment = input.nextLine();
+            break;
+        }
+      }
+    else {
+      System.out.println("Failed to make connection!");
+    }
+
+    connection.close();
+  }
 
 }
