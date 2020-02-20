@@ -86,7 +86,16 @@ public class Reporting {
             break;
           case "3":
             System.out.print("Enter Admission Number:");
-            String AdmissionNum = input.nextLine();
+            Integer AdmissionNum = input.nextInt();
+            String AdmissionStatement = ("Select Num,Patient_SSN,AdmissionDate,TotalPayment From Admission Where Num = ?");
+            PreparedStatement pstmtAdmiss = connection.prepareStatement(AdmissionStatement);
+            pstmtAdmiss.setInt(1, AdmissionNum);
+            ResultSet AdmissionInfo = pstmtAdmiss.executeQuery();
+            System.out.println("Admission Number: " + AdmissionInfo.getString("AdmissionNum"));
+            System.out.println("Patient SSN: " + AdmissionInfo.getString("AdmissionNum"));
+            System.out.println("Admission date(start date): " + AdmissionInfo.getString("AdmissionNum"));
+            System.out.println("Total Payment: " + AdmissionInfo.getString("AdmissionNum"));
+            System.out.println("Rooms:");
             break;
           case "4":
             System.out.print("Enter Admission Number:");
