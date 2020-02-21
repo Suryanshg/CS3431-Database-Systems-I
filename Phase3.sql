@@ -379,9 +379,15 @@ FROM Equipment
 WHERE Serial# = 'A01-02X';
 
 /* Q6 Report the employee who has access to the largest number of rooms. We need the employee ID, and the number of rooms (s)he can access. */
-SELECT EmpId, COUNT(roomNum) AS NumRoomsHasAccess
-FROM RoomAccess
-GROUP BY EmpId;
+SELECT R2.EmpId, R1.NumOfRoomAccess
+FROM (SELECT MAX(NumRoomsHasAccess) AS NumOfRoomAccess
+      FROM (SELECT EmpId, COUNT(roomNum) AS NumRoomsHasAccess
+            FROM RoomAccess
+            GROUP BY EmpId)) R1,
+			(SELECT EmpId, COUNT(roomNum) AS NumRoomsHasAccess
+            FROM RoomAccess
+            GROUP BY EmpId) R2
+WHERE R1.NumOfRoomAccess=R2.NumRoomsHasAccess;
 
 /* Q7 Report the number of regular employees, division managers, and general managers in the hospital." */
 SELECT empRANK AS Type, COUNT(*) AS count
