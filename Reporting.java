@@ -91,11 +91,36 @@ public class Reporting {
             PreparedStatement pstmtAdmiss = connection.prepareStatement(AdmissionStatement);
             pstmtAdmiss.setInt(1, AdmissionNum);
             ResultSet AdmissionInfo = pstmtAdmiss.executeQuery();
-            System.out.println("Admission Number: " + AdmissionInfo.getString("AdmissionNum"));
-            System.out.println("Patient SSN: " + AdmissionInfo.getString("AdmissionNum"));
-            System.out.println("Admission date(start date): " + AdmissionInfo.getString("AdmissionNum"));
-            System.out.println("Total Payment: " + AdmissionInfo.getString("AdmissionNum"));
+            AdmissionInfo.next();
+            System.out.println("Admission Number: " + AdmissionInfo.getString("Num"));
+            System.out.println("Patient SSN: " + AdmissionInfo.getString("Patient_SSN"));
+            System.out.println("Admission date(start date): " + AdmissionInfo.getString("AdmissionDate"));
+            System.out.println("Total Payment: " + AdmissionInfo.getString("TotalPayment"));
+            
             System.out.println("Rooms:");
+            String RoomStatement = ("Select RoomNum,startDate,endDate From StayIn Where AdmissionNum = ?");
+            PreparedStatement pstmtStayIn = connection.prepareStatement(RoomStatement);
+            pstmtStayIn.setInt(1, AdmissionNum);
+            ResultSet StayInInfo = pstmtStayIn.executeQuery();
+
+            while(StayInInfo.next()){
+              System.out.println("\tRoomNum: " + StayInInfo.getString("RoomNum") + 
+              "\tFromDate: " + StayInInfo.getString("startDate") + 
+              "\tEndDate: " + StayInInfo.getString("endDate"));
+            }
+
+            System.out.println("Doctors examined the patient in this admission:");
+            String ExamineStatement = ("Select DISTINCT DoctorID From Examine Where AdmissionNum = ?");
+            PreparedStatement pstmtExamine = connection.prepareStatement(ExamineStatement);
+            pstmtExamine.setInt(1, AdmissionNum);
+            ResultSet ExamineInfo = pstmtExamine.executeQuery();
+
+            while(ExamineInfo.next()){
+              System.out.println("\tDoctor ID: " + ExamineInfo.getString("DoctorID"));
+            }
+
+
+
             break;
           case "4":
             System.out.print("Enter Admission Number:");
