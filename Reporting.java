@@ -96,17 +96,16 @@ public class Reporting {
             System.out.println("Patient SSN: " + AdmissionInfo.getString("Patient_SSN"));
             System.out.println("Admission date(start date): " + AdmissionInfo.getString("AdmissionDate"));
             System.out.println("Total Payment: " + AdmissionInfo.getString("TotalPayment"));
-            
+
             System.out.println("Rooms:");
             String RoomStatement = ("Select RoomNum,startDate,endDate From StayIn Where AdmissionNum = ?");
             PreparedStatement pstmtStayIn = connection.prepareStatement(RoomStatement);
             pstmtStayIn.setInt(1, AdmissionNum);
             ResultSet StayInInfo = pstmtStayIn.executeQuery();
 
-            while(StayInInfo.next()){
-              System.out.println("\tRoomNum: " + StayInInfo.getString("RoomNum") + 
-              "\tFromDate: " + StayInInfo.getString("startDate") + 
-              "\tEndDate: " + StayInInfo.getString("endDate"));
+            while (StayInInfo.next()) {
+              System.out.println("\tRoomNum: " + StayInInfo.getString("RoomNum") + "\tFromDate: "
+                  + StayInInfo.getString("startDate") + "\tEndDate: " + StayInInfo.getString("endDate"));
             }
 
             System.out.println("Doctors examined the patient in this admission:");
@@ -115,18 +114,22 @@ public class Reporting {
             pstmtExamine.setInt(1, AdmissionNum);
             ResultSet ExamineInfo = pstmtExamine.executeQuery();
 
-            while(ExamineInfo.next()){
+            while (ExamineInfo.next()) {
               System.out.println("\tDoctor ID: " + ExamineInfo.getString("DoctorID"));
             }
-
-
 
             break;
           case "4":
             System.out.print("Enter Admission Number:");
-            String AdmissionNumTwo = input.nextLine();
+            Integer AdmissionNumTwo = input.nextInt();
             System.out.print("Enter the new total payment:");
-            String totalPayment = input.nextLine();
+            Integer totalPayment = input.nextInt();
+            String UpdatePaymentStatement = "UPDATE Admission set TotalPayment = ? Where Num = ?";
+            PreparedStatement updatingTotalPayment = connection.prepareStatement(UpdatePaymentStatement);
+            updatingTotalPayment.setInt(1, totalPayment);
+            updatingTotalPayment.setInt(2, AdmissionNumTwo);
+            Integer NumUpdated = updatingTotalPayment.executeUpdate();
+
             break;
         }
       }
