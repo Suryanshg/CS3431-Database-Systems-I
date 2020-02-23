@@ -52,6 +52,7 @@ public class Reporting {
         System.out.println(
             "1- Report Patients Basic Information \n2- Reporting Doctors Basic Information \n3- Report Admissions Information\n4- Update Admissions Payment");
       } else {
+        boolean used = false;
         switch (argv[2]) {
           case "1":
             System.out.print("Enter Patient SSN:");
@@ -60,11 +61,16 @@ public class Reporting {
             PreparedStatement pstmt = connection.prepareStatement(Statement);
             // pstmt.setString(1, "A");
             ResultSet Patient = pstmt.executeQuery();
+
             while (Patient.next()) {
               System.out.println("Patient SSN: " + Patient.getString("SSN"));
               System.out.println("Patient First Name: " + Patient.getString("FirstName"));
               System.out.println("Patient LastName: " + Patient.getString("LastName"));
               System.out.println("Patient Address: " + Patient.getString("Address"));
+              used = true;
+            }
+            if (!used) {
+              System.out.println("No Patient with that SSN");
             }
             Patient.close();
             pstmt.close();
@@ -82,6 +88,10 @@ public class Reporting {
               System.out.println("Doctor First Name: " + Doctor.getString("FirstName"));
               System.out.println("Doctor LastName: " + Doctor.getString("LastName"));
               System.out.println("Doctor Gender: " + Doctor.getString("gender"));
+              used = true;
+            }
+            if (!used) {
+              System.out.println("No doctor with that ID");
             }
             break;
           case "3":
@@ -105,7 +115,11 @@ public class Reporting {
 
             while (StayInInfo.next()) {
               System.out.println("\tRoomNum: " + StayInInfo.getString("RoomNum") + "\tFromDate: "
-                  + StayInInfo.getString("startDate") + "\tEndDate: " + StayInInfo.getString("endDate"));
+                  + StayInInfo.getString("startDate") + "\tToDate: " + StayInInfo.getString("endDate"));
+              used = true;
+            }
+            if (!used) {
+              System.out.println("No admission with that number");
             }
 
             System.out.println("Doctors examined the patient in this admission:");
@@ -129,7 +143,6 @@ public class Reporting {
             updatingTotalPayment.setInt(1, totalPayment);
             updatingTotalPayment.setInt(2, AdmissionNumTwo);
             Integer NumUpdated = updatingTotalPayment.executeUpdate();
-
             break;
         }
       }
